@@ -1,0 +1,353 @@
+# China SMR Tracker — source of truth
+#
+# One entry per reactor project. Every claim carries a source.
+# Scope: electricity-generating small modular reactors in mainland China,
+# <= 300 MWe per module (IAEA definition). Land-based and floating.
+# Out of scope: large reactors (Hualong One, CAP1400), pure district-heating
+# reactors (DHR-400 Yanlong, HAPPY200, NHR-200), fast reactors, research-only
+# reactors with no electrical output (TMSR-LF1), naval propulsion.
+#
+# Controlled vocabularies — must match ALLOWED_* in scripts/validate_data.py:
+#   status:        Announced | Approved | Under Construction | Commissioning |
+#                  Operational | On Hold | Cancelled
+#   design_family: Integral PWR | Compact PWR | HTGR | Molten Salt | Other
+#   deployment:    Land-based | Floating | Barge-mounted
+#   purpose:       Electricity | Cogeneration
+#   developer_type: State-Owned | Academic-Industrial | JV | Private
+#
+# IMPORTANT: every entry below is a SEED, written from general knowledge and
+# marked verified: false. Before you publish, replace each landing-page source
+# with the specific filing, regulator notice or dated article that supports the
+# claim, then set verified: true. The validator refuses to let an entry be
+# marked verified while it still cites only a landing page.
+
+reactors:
+
+  - id: linglong-one-changjiang
+    name_en: "Linglong One, Changjiang Unit 1"
+    name_zh: "玲龙一号 海南昌江"
+    design: "ACP100"
+    design_family: "Integral PWR"
+    developer_en: "China National Nuclear Corporation"
+    developer_zh: "中国核工业集团有限公司"
+    developer_type: "State-Owned"
+    operator: "Hainan Nuclear Power Co., Ltd."
+    site:
+      name: "Changjiang Nuclear Power Base"
+      province: "Hainan"
+      lat: 19.47
+      lon: 108.80
+    deployment: "Land-based"
+    purpose: "Electricity"
+    status: "Under Construction"
+    output:
+      thermal_mwt: 385
+      module_mwe: 125
+      modules: 1
+      plant_mwe: 125
+      basis: "design"
+    dates:
+      announced: "2010-01-01"
+      approved: "2019-07-18"
+      construction_start: "2021-07-13"
+      first_criticality: null
+      grid_connection: null
+      commercial_operation: null
+      expected_commercial_operation: "2026-12-31"
+    narrative:
+      what_it_is: >-
+        A 125 MWe integral pressurised water reactor with the steam generators
+        mounted inside the reactor pressure vessel, built as a single unit on
+        the existing Changjiang site alongside two large Hualong-class units.
+      why_it_matters: >-
+        The first land-based commercial SMR to reach concrete anywhere, and the
+        reference case for whether an SMR can be built at a cost per kW that
+        competes with the large reactors next door to it. Every national SMR
+        programme is watching the delivered cost of this one unit.
+    milestones:
+      - date: "2016-04-01"
+        event: "ACP100 design completes an IAEA generic reactor safety review, the first SMR design to do so"
+      - date: "2021-07-13"
+        event: "First concrete poured at Changjiang"
+      - date: "2023-08-10"
+        event: "Reactor core module installed"
+    verification:
+      verified: false
+      last_verified: null
+      note: "Dates and ratings seeded from memory. Confirm against IAEA PRIS, the ARIS design sheet and CNNC disclosures."
+    sources:
+      - url: "https://pris.iaea.org/pris/CountryStatistics/CountryDetails.aspx?current=CN"
+        title: "IAEA Power Reactor Information System — China country details"
+        date: "2026-01-01"
+      - url: "https://en.cnnc.com.cn"
+        title: "China National Nuclear Corporation — corporate disclosures"
+        date: "2026-01-01"
+
+  - id: shidaowan-htr-pm
+    name_en: "Shidaowan HTR-PM Demonstration Plant"
+    name_zh: "石岛湾高温气冷堆核电站示范工程"
+    design: "HTR-PM"
+    design_family: "HTGR"
+    developer_en: "China Huaneng Group with Tsinghua INET and CNNC"
+    developer_zh: "中国华能集团 / 清华大学核研院 / 中核集团"
+    developer_type: "Academic-Industrial"
+    operator: "Huaneng Shandong Shidao Bay Nuclear Power Co."
+    site:
+      name: "Shidaowan, Rongcheng"
+      province: "Shandong"
+      lat: 36.95
+      lon: 122.47
+    deployment: "Land-based"
+    purpose: "Electricity"
+    status: "Operational"
+    output:
+      thermal_mwt: 500
+      module_mwe: 105
+      modules: 2
+      plant_mwe: 210
+      basis: "nameplate"
+    dates:
+      announced: "2001-01-01"
+      approved: "2008-02-01"
+      construction_start: "2012-12-09"
+      first_criticality: "2021-09-12"
+      grid_connection: "2021-12-20"
+      commercial_operation: "2023-12-06"
+      expected_commercial_operation: null
+    narrative:
+      what_it_is: >-
+        Two pebble-bed high-temperature gas-cooled reactor modules of 250 MWt
+        each, helium-cooled, feeding a single steam turbine. Fuel is TRISO
+        particles in graphite pebbles that circulate through the core.
+      why_it_matters: >-
+        The only Generation IV reactor in commercial operation anywhere, and the
+        proof that a twin-module plant sharing one turbine hall actually works.
+        It also sets the realistic clock for first-of-a-kind SMR delivery:
+        eleven years from first concrete to commercial operation.
+    milestones:
+      - date: "2012-12-09"
+        event: "First concrete poured"
+      - date: "2021-09-12"
+        event: "First reactor module reaches initial criticality"
+      - date: "2021-12-20"
+        event: "Grid connection"
+      - date: "2023-12-06"
+        event: "Declared in commercial operation"
+    verification:
+      verified: false
+      last_verified: null
+      note: "Seeded from memory. Confirm commissioning dates against IAEA PRIS and Huaneng announcements."
+    sources:
+      - url: "https://pris.iaea.org/pris/CountryStatistics/CountryDetails.aspx?current=CN"
+        title: "IAEA Power Reactor Information System — China country details"
+        date: "2026-01-01"
+      - url: "https://www.inet.tsinghua.edu.cn"
+        title: "Tsinghua University Institute of Nuclear and New Energy Technology"
+        date: "2026-01-01"
+
+  - id: ruijin-htr-pm600
+    name_en: "Ruijin HTR-PM600"
+    name_zh: "瑞金高温气冷堆"
+    design: "HTR-PM600"
+    design_family: "HTGR"
+    developer_en: "China Huaneng Group"
+    developer_zh: "中国华能集团"
+    developer_type: "State-Owned"
+    operator: null
+    site:
+      name: "Ruijin, Ganzhou"
+      province: "Jiangxi"
+      lat: 25.88
+      lon: 115.99
+    deployment: "Land-based"
+    purpose: "Electricity"
+    status: "Approved"
+    output:
+      thermal_mwt: 500
+      module_mwe: 105
+      modules: 6
+      plant_mwe: 650
+      basis: "design"
+    dates:
+      announced: "2019-01-01"
+      approved: "2022-09-13"
+      construction_start: null
+      first_criticality: null
+      grid_connection: null
+      commercial_operation: null
+      expected_commercial_operation: null
+    narrative:
+      what_it_is: >-
+        The commercial follow-on to Shidaowan: six HTR-PM modules driving a
+        single large turbine on an inland-adjacent site in Jiangxi.
+      why_it_matters: >-
+        The test of the central SMR claim, that modularity pays off in series.
+        One plant at 650 MWe total but roughly 105 MWe per module, it sits on
+        the boundary of the SMR definition and is tracked here on a per-module
+        basis, the same convention the IAEA uses.
+    milestones:
+      - date: "2022-09-13"
+        event: "Project reported approved by the State Council"
+    verification:
+      verified: false
+      last_verified: null
+      note: "Approval date and module count need checking. This is the weakest entry in the seed set."
+    sources:
+      - url: "https://www.chng.com.cn"
+        title: "China Huaneng Group — project announcements"
+        date: "2026-01-01"
+
+  - id: acp100s-floating
+    name_en: "ACP100S Floating Nuclear Power Platform"
+    name_zh: "ACP100S 海上浮动核电站"
+    design: "ACP100S"
+    design_family: "Integral PWR"
+    developer_en: "China National Nuclear Corporation"
+    developer_zh: "中国核工业集团有限公司"
+    developer_type: "State-Owned"
+    operator: null
+    site:
+      name: "Marine platform, intended deployment Bohai Sea / South China Sea"
+      province: "Shandong"
+      lat: 38.10
+      lon: 118.90
+    deployment: "Floating"
+    purpose: "Electricity"
+    status: "On Hold"
+    output:
+      thermal_mwt: 385
+      module_mwe: 125
+      modules: 1
+      plant_mwe: 125
+      basis: "design"
+    dates:
+      announced: "2015-01-01"
+      approved: null
+      construction_start: null
+      first_criticality: null
+      grid_connection: null
+      commercial_operation: null
+      expected_commercial_operation: null
+    narrative:
+      what_it_is: >-
+        The marine variant of the ACP100, mounted on a hull for offshore power
+        supply to islands, platforms and coastal industry.
+      why_it_matters: >-
+        Floating units are where SMR economics and maritime law collide, and
+        where the gap between Chinese announcement and Chinese steel has been
+        widest. Keeping a stalled project visible is as informative as tracking
+        an active one.
+    milestones:
+      - date: "2016-01-01"
+        event: "Reported as entering engineering and hull procurement; limited public progress since"
+    verification:
+      verified: false
+      last_verified: null
+      note: "Status is an inference from the absence of news, which is exactly the kind of claim that needs a dated source before publishing."
+    sources:
+      - url: "https://en.cnnc.com.cn"
+        title: "China National Nuclear Corporation — corporate disclosures"
+        date: "2026-01-01"
+
+  - id: acpr50s-floating
+    name_en: "ACPR50S Floating Reactor"
+    name_zh: "ACPR50S 海上小型堆"
+    design: "ACPR50S"
+    design_family: "Compact PWR"
+    developer_en: "China General Nuclear Power Group"
+    developer_zh: "中国广核集团"
+    developer_type: "State-Owned"
+    operator: null
+    site:
+      name: "Marine platform, intended deployment South China Sea"
+      province: "Guangdong"
+      lat: 21.90
+      lon: 112.90
+    deployment: "Floating"
+    purpose: "Electricity"
+    status: "On Hold"
+    output:
+      thermal_mwt: 200
+      module_mwe: 60
+      modules: 1
+      plant_mwe: 60
+      basis: "design"
+    dates:
+      announced: "2015-01-01"
+      approved: null
+      construction_start: null
+      first_criticality: null
+      grid_connection: null
+      commercial_operation: null
+      expected_commercial_operation: null
+    narrative:
+      what_it_is: >-
+        CGN's 60 MWe compact PWR for offshore deployment, intended for island
+        power and offshore oil and gas platforms.
+      why_it_matters: >-
+        Announced in the same window as CNNC's floating unit and included in
+        national energy innovation planning, then quiet. The pair are the
+        cleanest available measure of announcement-to-delivery attrition in the
+        Chinese SMR programme.
+    milestones:
+      - date: "2016-11-04"
+        event: "Equipment fabrication for a demonstration unit reported to have begun"
+    verification:
+      verified: false
+      last_verified: null
+      note: "Seeded from memory; the 2016 milestone date in particular needs a primary source."
+    sources:
+      - url: "https://www.cgnpc.com.cn"
+        title: "China General Nuclear Power Group — corporate site"
+        date: "2026-01-01"
+
+  - id: cap200
+    name_en: "CAP200"
+    name_zh: "CAP200 小型压水堆"
+    design: "CAP200"
+    design_family: "Compact PWR"
+    developer_en: "State Power Investment Corporation"
+    developer_zh: "国家电力投资集团"
+    developer_type: "State-Owned"
+    operator: null
+    site:
+      name: "Site not fixed; studies reported for inland and coastal locations"
+      province: "Jiangxi"
+      lat: 28.68
+      lon: 115.89
+    deployment: "Land-based"
+    purpose: "Cogeneration"
+    status: "Announced"
+    output:
+      thermal_mwt: 660
+      module_mwe: 200
+      modules: 1
+      plant_mwe: 200
+      basis: "design"
+    dates:
+      announced: "2016-01-01"
+      approved: null
+      construction_start: null
+      first_criticality: null
+      grid_connection: null
+      commercial_operation: null
+      expected_commercial_operation: null
+    narrative:
+      what_it_is: >-
+        SPIC's 200 MWe small pressurised water reactor, derived from the CAP
+        passive-safety line, offered for combined power and district heat.
+      why_it_matters: >-
+        The third state group's entry, which matters because SMR siting in China
+        is being decided as much by which SOE owns the site as by which design
+        is ready.
+    milestones:
+      - date: "2016-01-01"
+        event: "Design development reported underway"
+    verification:
+      verified: false
+      last_verified: null
+      note: "Site is indicative only. Do not publish a coordinate for an unsited design without saying so on the map."
+    sources:
+      - url: "https://www.spic.com.cn"
+        title: "State Power Investment Corporation — corporate site"
+        date: "2026-01-01"

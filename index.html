@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" defer></script>
+{% endblock %}
+
+{% block content %}
+<section class="hero wrap">
+  <h1>{{ totals.count }} small modular reactor projects in mainland China,<br>
+      {{ totals.operational_mwe }} MWe of them actually generating.</h1>
+  <p class="lede">
+    China is the only country with small modular reactors in commercial
+    operation and under construction at the same time. The gap between what has
+    been announced and what has been built is the whole story, so this tracker
+    records both, keeps stalled and cancelled projects on the page, and cites a
+    dated source for every claim.
+  </p>
+
+  <div class="ladder">
+    {% for stage in ladder %}
+    <a class="rung" style="--stage: {{ stage.colour }}" href="#table" data-stage="{{ stage.name }}">
+      <span class="count">{{ stage.count }}</span>
+      <span class="label">{{ stage.name }}</span>
+      <span class="mwe">{{ stage.mwe }} MWe</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Where they are</h2>
+  <div id="map"></div>
+  <p class="map-note">
+    Circle size follows plant output. Hollow circles mark projects with no fixed
+    site, placed at an indicative location only.
+  </p>
+</section>
+
+<section class="wrap" id="table">
+  <h2>The record</h2>
+  <div class="controls">
+    <input type="search" id="q" placeholder="Search name, design, developer or province" aria-label="Search the table">
+    {% for stage in ladder %}
+    <button class="chip" type="button" aria-pressed="false" data-filter="{{ stage.name }}">{{ stage.name }}</button>
+    {% endfor %}
+    <button class="chip" type="button" id="clear">Show all</button>
+  </div>
+
+  <div class="table-scroll">
+    <table id="reactors">
+      <thead>
+        <tr>
+          <th data-key="name">Project</th>
+          <th data-key="design">Design</th>
+          <th data-key="developer">Developer</th>
+          <th data-key="province">Province</th>
+          <th data-key="module" class="num">MWe / module</th>
+          <th data-key="plant" class="num">MWe / plant</th>
+          <th data-key="status">Status</th>
+          <th data-key="milestone" class="num">Last milestone</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for r in reactors %}
+        <tr class="row{% if r.status == 'Cancelled' %} cancelled{% endif %}"
+            data-id="{{ r.id }}"
+            data-status="{{ r.status }}"
+            data-text="{{ r.search }}"
+            tabindex="0">
+          <td class="name">{{ r.name_en }}<small>{{ r.name_zh }}</small></td>
+          <td>{{ r.design }}</td>
+          <td>{{ r.developer_short }}</td>
+          <td>{{ r.province }}</td>
+          <td class="num" data-sort="{{ r.module_mwe }}">{{ r.module_mwe }}</td>
+          <td class="num" data-sort="{{ r.plant_mwe }}">{{ r.plant_mwe }}</td>
+          <td><span class="status" style="--stage: {{ r.colour }}">{{ r.status }}</span></td>
+          <td class="num" data-sort="{{ r.last_milestone_sort }}">{{ r.last_milestone_date or "—" }}</td>
+        </tr>
+        <tr class="detail" hidden data-detail="{{ r.id }}">
+          <td colspan="8">
+            <p>{{ r.why_it_matters }}</p>
+            <p class="detail-meta">
+              {{ r.sources_count }} source{{ "" if r.sources_count == 1 else "s" }} on record.
+              {%- if not r.verified %}<span class="flag">unverified seed</span>{% endif %}
+              <a href="reactors/{{ r.id }}.html">Open the full entry</a>
+            </p>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="map-note" id="shown"></p>
+</section>
+
+<section class="wrap">
+  <h2>How this is kept honest</h2>
+  <p>One entry per project, one dated source per claim, with filings and
+  regulator notices preferred over trade press and aggregators never used. A
+  validator runs before every build and refuses to publish a file with a
+  mistyped status, a chronology that runs backwards, a reactor placed outside
+  China, or an entry claiming verification while citing only a corporate
+  homepage.</p>
+  <p>Status is tracked through the full lifecycle. Stalled and cancelled
+  projects stay on the page, because announcements that never became concrete
+  are the most useful part of the record, but their output is excluded from the
+  generating total above.</p>
+  <p>A scheduled job sweeps Chinese and English sources every fortnight and
+  flags anything that contradicts this file. It never edits the data. A person
+  checks the primary source and makes the commit.</p>
+</section>
+
+<script id="reactor-data" type="application/json">{{ geojson }}</script>
+<script>
+(function () {
+  var table = document.getElementById('reactors');
+  var rows = Array.from(table.tBodies[0].querySelectorAll('tr.row'));
+  var q = document.getElementById('q');
+  var chips = Array.from(document.querySelectorAll('.chip[data-filter]'));
+  var shown = document.getElementById('shown');
+  var active = null;
+
+  function detailFor(row) {
+    return table.querySelector('tr[data-detail="' + row.dataset.id + '"]');
+  }
+
+  function apply() {
+    var term = q.value.trim().toLowerCase();
+    var visible = 0;
+    rows.forEach(function (row) {
+      var ok = (!active || row.dataset.status === active) &&
+               (!term || row.dataset.text.indexOf(term) !== -1);
+      row.hidden = !ok;
+      var d = detailFor(row);
+      if (!ok) d.hidden = true;
+      if (ok) visible++;
+    });
+    shown.textContent = visible === rows.length
+      ? rows.length + ' projects'
+      : visible + ' of ' + rows.length + ' projects shown';
+  }
+
+  function setFilter(status) {
+    active = status;
+    chips.forEach(function (c) {
+      c.setAttribute('aria-pressed', String(c.dataset.filter === status));
+    });
+    apply();
+  }
+
+  q.addEventListener('input', apply);
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      setFilter(active === c.dataset.filter ? null : c.dataset.filter);
+    });
+  });
+  document.getElementById('clear').addEventListener('click', function () {
+    q.value = ''; setFilter(null);
+  });
+  document.querySelectorAll('.rung[data-stage]').forEach(function (rung) {
+    rung.addEventListener('click', function () { setFilter(rung.dataset.stage); });
+  });
+
+  function toggle(row) {
+    var d = detailFor(row);
+    d.hidden = !d.hidden;
+  }
+  rows.forEach(function (row) {
+    row.addEventListener('click', function (e) {
+      if (e.target.tagName !== 'A') toggle(row);
+    });
+    row.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(row); }
+    });
+  });
+
+  // Sorting. Numeric columns carry data-sort; text columns sort on content.
+  var dir = {};
+  table.querySelectorAll('thead th').forEach(function (th, idx) {
+    th.addEventListener('click', function () {
+      var key = th.dataset.key;
+      dir[key] = dir[key] === 'asc' ? 'desc' : 'asc';
+      table.querySelectorAll('thead th').forEach(function (o) { o.removeAttribute('data-dir'); });
+      th.setAttribute('data-dir', dir[key] === 'asc' ? '\u2191' : '\u2193');
+      var sign = dir[key] === 'asc' ? 1 : -1;
+      var pairs = rows.map(function (r) { return [r, detailFor(r)]; });
+      pairs.sort(function (a, b) {
+        var ca = a[0].cells[idx], cb = b[0].cells[idx];
+        var va = ca.dataset.sort, vb = cb.dataset.sort;
+        if (va !== undefined && vb !== undefined) {
+          return sign * (parseFloat(va || 0) - parseFloat(vb || 0));
+        }
+        return sign * ca.textContent.trim().localeCompare(cb.textContent.trim());
+      });
+      var body = table.tBodies[0];
+      pairs.forEach(function (p) { body.appendChild(p[0]); body.appendChild(p[1]); });
+    });
+  });
+
+  apply();
+
+  // Map
+  window.addEventListener('load', function () {
+    if (typeof L === 'undefined') return;
+    var data = JSON.parse(document.getElementById('reactor-data').textContent);
+    var map = L.map('map', { scrollWheelZoom: false }).setView([32.5, 112], 4);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 10,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+    data.forEach(function (r) {
+      var radius = 6 + Math.sqrt(r.plant_mwe || 1) * 0.9;
+      L.circleMarker([r.lat, r.lon], {
+        radius: radius,
+        color: r.colour,
+        weight: 2,
+        fillColor: r.colour,
+        fillOpacity: r.sited ? 0.55 : 0.05
+      }).bindPopup(
+        '<strong>' + r.name_en + '</strong><br>' + r.status + ' &middot; ' +
+        r.plant_mwe + ' MWe<br><a href="reactors/' + r.id + '.html">Full entry</a>'
+      ).addTo(map);
+    });
+  });
+})();
+</script>
+{% endblock %}

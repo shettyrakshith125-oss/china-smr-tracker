@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}China SMR Tracker{% endblock %}</title>
+<meta name="description" content="An open, sourced record of every small modular reactor project in mainland China: status, output, site and the evidence behind each claim.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Serif:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ root }}style.css">
+{% block head %}{% endblock %}
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap">
+    <a class="wordmark" href="{{ root }}index.html">China SMR Tracker</a>
+    <nav>
+      <a href="{{ root }}index.html"{% if page == 'index' %} aria-current="page"{% endif %}>Reactors</a>
+      <a href="{{ root }}changes.html"{% if page == 'changes' %} aria-current="page"{% endif %}>What changed</a>
+      <a href="{{ root }}data/reactors.csv">Download data</a>
+    </nav>
+  </div>
+</header>
+
+{% block content %}{% endblock %}
+
+<footer>
+  <div class="wrap">
+    <p>Every figure on this site traces to a dated source on the reactor's own
+    page. Corrections are made in public: the data file lives in git and the
+    <a href="{{ root }}changes.html">change log</a> is generated from its commit history.</p>
+    <p>Data CC BY 4.0. Built {{ built }} from {{ count }} entries.
+    Statuses and ratings are compiled from public reporting and are not an
+    official record; the IAEA Power Reactor Information System is.</p>
+  </div>
+</footer>
+</body>
+</html>

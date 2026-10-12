@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}{{ r.name_en }} — China SMR Tracker{% endblock %}
+
+{% block content %}
+<section class="reactor-head wrap">
+  <p><a href="{{ root }}index.html">All reactors</a></p>
+  <h1>{{ r.name_en }}</h1>
+  {% if r.name_zh %}<p class="zh">{{ r.name_zh }}</p>{% endif %}
+  <p class="lede"><span class="status" style="--stage: {{ r.colour }}">{{ r.status }}</span>
+  &nbsp; {{ r.design }} &nbsp; {{ r.plant_mwe }} MWe</p>
+
+  {% if not r.verified %}
+  <div class="callout">
+    <p><strong>Unverified entry.</strong> {{ r.verification_note or
+    "This entry has not yet been checked against a primary source." }}</p>
+  </div>
+  {% endif %}
+</section>
+
+<section class="wrap">
+  <div class="cols">
+    <div>
+      <h2 style="margin-top:1rem">What it is</h2>
+      <p>{{ r.what_it_is }}</p>
+
+      <h2>Why it matters</h2>
+      <p>{{ r.why_it_matters }}</p>
+
+      {% if r.milestones %}
+      <h2>Milestones</h2>
+      <ol class="timeline">
+        {% for m in r.milestones %}
+        <li><time datetime="{{ m.date }}">{{ m.date }}</time>{{ m.event }}</li>
+        {% endfor %}
+      </ol>
+      {% endif %}
+
+      <h2>Sources</h2>
+      <ul class="sources">
+        {% for s in r.sources %}
+        <li><a href="{{ s.url }}" rel="noopener">{{ s.title }}</a>
+            <span class="when">{{ s.date }}</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <aside>
+      <h3>Specification</h3>
+      <dl class="spec">
+        <div><dt>Design</dt><dd>{{ r.design }}</dd></div>
+        <div><dt>Family</dt><dd>{{ r.design_family }}</dd></div>
+        <div><dt>Developer</dt><dd>{{ r.developer_en }}</dd></div>
+        {% if r.operator %}<div><dt>Operator</dt><dd>{{ r.operator }}</dd></div>{% endif %}
+        <div><dt>Site</dt><dd>{{ r.site_name }}</dd></div>
+        <div><dt>Province</dt><dd>{{ r.province }}</dd></div>
+        <div><dt>Deployment</dt><dd>{{ r.deployment }}</dd></div>
+        <div><dt>Purpose</dt><dd>{{ r.purpose }}</dd></div>
+        <div><dt>Thermal</dt><dd>{{ r.thermal_mwt }} MWt</dd></div>
+        <div><dt>Per module</dt><dd>{{ r.module_mwe }} MWe</dd></div>
+        <div><dt>Modules</dt><dd>{{ r.modules }}</dd></div>
+        <div><dt>Plant total</dt><dd>{{ r.plant_mwe }} MWe</dd></div>
+        <div><dt>Output basis</dt><dd>{{ r.basis }}</dd></div>
+      </dl>
+
+      <h3 style="margin-top:2rem">Chronology</h3>
+      <dl class="spec">
+        {% for label, value in r.chronology %}
+        <div><dt>{{ label }}</dt><dd>{{ value or "—" }}</dd></div>
+        {% endfor %}
+      </dl>
+    </aside>
+  </div>
+</section>
+{% endblock %}

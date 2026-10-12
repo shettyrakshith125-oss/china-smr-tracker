@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}What changed — China SMR Tracker{% endblock %}
+
+{% block content %}
+<section class="hero wrap">
+  <h1>What changed</h1>
+  <p class="lede">Every edit to the dataset, newest first, taken straight from
+  the commit history of <code>data/reactors.yml</code>. Corrections are not
+  quietly absorbed; if a figure on this site changes, the change is listed
+  here.</p>
+</section>
+
+<section class="wrap">
+  {% if commits %}
+  {% for c in commits %}
+  <div class="commit">
+    <time datetime="{{ c.date }}">{{ c.date }}</time>
+    <span class="subject">{{ c.subject }}</span>
+  </div>
+  {% endfor %}
+  {% else %}
+  <p>No commit history yet. Once this repository has commits touching the data
+  file, they will be listed here.</p>
+  {% endif %}
+</section>
+{% endblock %}
